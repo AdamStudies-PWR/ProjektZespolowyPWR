@@ -6,10 +6,25 @@ UserInterface::UserInterface(QWidget *parent)
   , ui(new Ui::UserInterface)
 {
   ui->setupUi(this);
+
+  connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
 }
 
 UserInterface::~UserInterface()
 {
-  delete ui;
+    delete ui;
 }
+
+void UserInterface::on_pushButton_clicked()
+{
+    http.get_request(myURL);
+}
+
+void UserInterface::http_get_response(QByteArray data)
+{
+    QString DataAsString = QString(data);
+    ui->textEdit->setText(data);
+
+}
+
 
