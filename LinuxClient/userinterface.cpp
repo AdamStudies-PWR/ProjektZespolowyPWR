@@ -8,6 +8,8 @@ UserInterface::UserInterface(QWidget *parent)
   ui->setupUi(this);
 
   connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
+
+  load_devices();
 }
 
 UserInterface::~UserInterface()
@@ -25,6 +27,11 @@ void UserInterface::http_get_response(QByteArray data)
     QString DataAsString = QString(data);
     ui->textEdit->setText(data);
 
+}
+
+void UserInterface::load_devices()
+{
+  devices = manager.loaddevices();
 }
 
 

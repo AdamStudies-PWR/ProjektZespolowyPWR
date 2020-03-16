@@ -6,7 +6,9 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QDebug>
+#include <QVector>
 #include "http.h"
+#include "filemanager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserInterface; }
@@ -23,9 +25,12 @@ public:
 private slots:
   void on_pushButton_clicked();
   void http_get_response(QByteArray);
+  void load_devices();
 
 private:
   Http_client http;
+  filemanager manager;
+  QVector<iot*> devices;
 
   //Testing the get request
   QString myURL = "https://www.youtube.com/watch?v=O-kDhSWRcgo";

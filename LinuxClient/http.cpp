@@ -24,4 +24,4 @@ void Http_client::readReady(QNetworkReply *reply)
     emit(dataReady(data));
 }
 
-
+QString Http_client::toString() {return "Http";}

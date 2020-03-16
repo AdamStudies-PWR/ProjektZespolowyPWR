@@ -6,7 +6,9 @@
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <iostream>
+#include <QString>
+
+using namespace std;
 
 class Http_client : public QObject{
 
@@ -18,6 +20,7 @@ public:
 
     //HTTP GET
     void get_request(QString);
+    QString toString();
 
 signals:
     //The signal is emitted to let the GUI know, that the data is ready
