@@ -38,7 +38,7 @@ private:
   QVector<iot*> devices;
 
   //Testing the get request
-  QString myURL = "https://www.youtube.com/watch?v=O-kDhSWRcgo";
+  QString myURL = "https://www.youtube.com";
 
   Ui::UserInterface *ui;
 };
