@@ -7,6 +7,10 @@
 #include <QNetworkRequest>
 #include <QDebug>
 #include <QVector>
+#include <QComboBox>
+#include <QCheckBox>
+#include <QImage>
+#include <QLabel>
 #include "http.h"
 #include "filemanager.h"
 
