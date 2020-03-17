@@ -6,12 +6,13 @@
 #include <QMessageBox>
 #include <QTextStream>
 #include <QString>
+#include <QDataStream>
 #include "iot.h"
 
-#include <iostream>
 using namespace std;
 
 
+//Adam Krizar
 class filemanager
 {
 private:

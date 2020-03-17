@@ -5,6 +5,7 @@
 
 using namespace std;
 
+//Adam Krizar
 class iot
 {
   int device_id;
@@ -14,10 +15,11 @@ class iot
   int protocol;
 public:
   iot(int id, QString name, int ip[4], int protocol);
-  int getDevice_id();
-  QString getDevice_name();
+  QString toString();
+
+  QString getName();
   int getProtocol();
-  int *getDevice_ip();
+  QString getIP();
 };
 
 #endif // IOT_H

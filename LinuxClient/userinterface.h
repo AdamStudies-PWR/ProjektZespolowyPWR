@@ -26,6 +26,7 @@ private slots:
   void on_pushButton_clicked();
   void http_get_response(QByteArray);
   void load_devices();
+  void closeEvent(QCloseEvent *event);
 
 private:
   Http_client http;

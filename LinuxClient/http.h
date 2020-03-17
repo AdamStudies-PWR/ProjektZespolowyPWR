@@ -10,6 +10,7 @@
 
 using namespace std;
 
+//Mateusz Gurski
 class Http_client : public QObject{
 
     Q_OBJECT
