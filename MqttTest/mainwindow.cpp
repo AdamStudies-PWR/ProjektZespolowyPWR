@@ -5,6 +5,7 @@
 #include <QtMqtt/QMqttClient>
 #include <QtWidgets/QMessageBox>
 
+//Arkadiusz Cichy
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -40,11 +41,13 @@ MainWindow::MainWindow(QWidget *parent) :
     updateLogStateChange();
 }
 
+//Arkadiusz Cichy
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+//Arkadiusz Cichy
 void MainWindow::on_buttonConnect_clicked()
 {
     if (m_client->state() == QMqttClient::Disconnected) {
@@ -60,11 +63,13 @@ void MainWindow::on_buttonConnect_clicked()
     }
 }
 
+//Arkadiusz Cichy
 void MainWindow::on_buttonQuit_clicked()
 {
     QApplication::quit();
 }
 
+//Arkadiusz Cichy
 void MainWindow::updateLogStateChange()
 {
     const QString content = QDateTime::currentDateTime().toString()
@@ -74,6 +79,7 @@ void MainWindow::updateLogStateChange()
     ui->editLog->insertPlainText(content);
 }
 
+//Arkadiusz Cichy
 void MainWindow::brokerDisconnected()
 {
     ui->lineEditHost->setEnabled(true);
@@ -81,17 +87,20 @@ void MainWindow::brokerDisconnected()
     ui->buttonConnect->setText(tr("Connect"));
 }
 
+//Arkadiusz Cichy
 void MainWindow::setClientPort(int p)
 {
     m_client->setPort(p);
 }
 
+//Arkadiusz Cichy
 void MainWindow::on_buttonPublish_clicked()
 {
     if (m_client->publish(ui->lineEditTopic->text(), ui->lineEditMessage->text().toUtf8()) == -1)
         QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not publish message"));
 }
 
+//Arkadiusz Cichy
 void MainWindow::on_buttonSubscribe_clicked()
 {
     auto subscription = m_client->subscribe(ui->lineEditTopic->text());

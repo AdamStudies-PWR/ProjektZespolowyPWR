@@ -8,6 +8,7 @@ namespace Ui {
 class MainWindow;
 }
 
+//Arkadiusz Cichy
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
