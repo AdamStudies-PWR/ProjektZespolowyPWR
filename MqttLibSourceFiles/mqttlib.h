@@ -7,10 +7,10 @@ class MQTTLIB_EXPORT MqttLib
 {
 public:
     MqttLib();
-    void updateLogStateChange();
-    void setClientPort(int p);
-    bool on_buttonPublish_clicked(QMqttTopicName &name, QByteArray &message);
-    QMqttSubscription* on_buttonSubscribe_clicked(QMqttTopicFilter &filter);
+    void UpdateLogStateChange();
+    void SetClientPort(int p);
+    bool Publish(QMqttTopicName &name, QByteArray &message);
+    QMqttSubscription* Subscribe(QMqttTopicFilter &filter);
     QMqttClient *m_client;
     void ToggleConnection();
 };

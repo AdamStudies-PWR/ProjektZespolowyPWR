@@ -1,7 +1,8 @@
 #include "mqttlib.h"
 
 MqttLib::MqttLib()
-{     
+{
+    m_client = new QMqttClient();
 }
 
 void MqttLib::ToggleConnection()
@@ -13,7 +14,7 @@ void MqttLib::ToggleConnection()
     }
 }
 
-void MqttLib::updateLogStateChange()
+void MqttLib::UpdateLogStateChange()
 {
     const QString content = QDateTime::currentDateTime().toString()
                     + QLatin1String(": State Change")
@@ -21,19 +22,19 @@ void MqttLib::updateLogStateChange()
                     + QLatin1Char('\n');
 }
 
-void MqttLib::setClientPort(int p)
+void MqttLib::SetClientPort(int p)
 {
     m_client->setPort(p);
 }
 
-bool MqttLib::on_buttonPublish_clicked(QMqttTopicName &name, QByteArray &message)
+bool MqttLib::Publish(QMqttTopicName &name, QByteArray &message)
 {
     if (m_client->publish(name, message) == -1)
         return false;
     return true;
 }
 
-QMqttSubscription* MqttLib::on_buttonSubscribe_clicked(QMqttTopicFilter &filter)
+QMqttSubscription* MqttLib::Subscribe(QMqttTopicFilter &filter)
 {
     auto subscription = m_client->subscribe(filter);
     if (!subscription)
