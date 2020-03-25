@@ -18,14 +18,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     filemanager.cpp \
-    http.cpp \
     iot.cpp \
     main.cpp \
     userinterface.cpp
 
 HEADERS += \
     filemanager.h \
-    http.h \
     iot.h \
     userinterface.h
 
@@ -36,3 +34,8 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/lib/ -lhttp
+
+INCLUDEPATH += $$PWD/../LinuxLibraries/HTTP/headers
+DEPENDPATH += $$PWD/../LinuxLibraries/HTTP/headers

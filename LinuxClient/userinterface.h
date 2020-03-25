@@ -11,8 +11,8 @@
 #include <QCheckBox>
 #include <QImage>
 #include <QLabel>
-#include "http.h"
 #include "filemanager.h"
+#include "http.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserInterface; }
