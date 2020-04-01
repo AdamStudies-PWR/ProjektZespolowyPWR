@@ -13,7 +13,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-        main.cpp
+        main.cpp \
+    filemanager.cpp \
+    iot.cpp \
+    interface.cpp
 
 RESOURCES += qml.qrc
 
@@ -24,7 +27,15 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 # Default rules for deployment.
-ANDROID_ABIS=arm64-v8a armeabi-v7a x86_64 x86
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+HEADERS += \
+    filemanager.h \
+    iot.h \
+    interface.h
+
+#unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/lib/ -lhttp
+INCLUDEPATH += $$PWD/../LinuxLibraries/HTTP/headers
+DEPENDPATH += $$PWD/../LinuxLibraries/HTTP/headers
