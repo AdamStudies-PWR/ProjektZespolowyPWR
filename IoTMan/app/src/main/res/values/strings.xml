@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">IoTMan</string>
+    <string name="title_home">Urządzenia</string>
+    <string name="title_dashboard">Sensory</string>
+    <string name="title_notifications">Ustawienia</string>
+</resources>
