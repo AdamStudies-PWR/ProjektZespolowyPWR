@@ -9,17 +9,17 @@
         android:id="@+id/navigation_home"
         android:name="com.pwr.iotman.ui.home.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_devices" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.pwr.iotman.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_sensors" />
 
     <fragment
         android:id="@+id/navigation_notifications"
         android:name="com.pwr.iotman.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_settings" />
 </navigation>
