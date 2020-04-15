@@ -7,7 +7,7 @@
     tools:context=".ui.devices.DeviceFragment">
 
     <ScrollView
-        android:id="@+id/deviceScroll"
+        android:id="@+id/sensorsScroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
@@ -17,23 +17,71 @@
 
         <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TableRow
+                android:id="@+id/tableRow1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent" >
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/Label1"
+                    android:text="@string/label1"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorText"
+                    android:padding="4dp"
+                    android:gravity="center"/>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/Label2"
+                    android:text="@string/label2"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorText"
+                    android:padding="4dp"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center"/>
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                <TextView
+                    android:id="@+id/Label3"
+                    android:text="@string/label3"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorText"
+                    android:padding="4dp"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/Label4"
+                    android:text="@string/label4"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorText"
+                    android:padding="4dp"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:id="@+id/Label5"
+                    android:text="@string/label5"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:textColor="@color/colorText"
+                    android:padding="4dp"
+                    android:layout_marginLeft="1dp"
+                    android:gravity="center"/>
+
+            </TableRow>
+
         </TableLayout>
     </ScrollView>
 
@@ -46,7 +94,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deviceScroll">
+        app:layout_constraintTop_toBottomOf="@+id/sensorsScroll">
 
         <Button
             android:id="@+id/connectButton"

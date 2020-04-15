@@ -8,4 +8,14 @@
     <string name="delete">Usuń</string>
     <string name="disconnect">Rozłącz</string>
     <string name="add">Dodaj</string>
+
+    <string name="label1">Id</string>
+    <string name="label2">Nazwa</string>
+    <string name="label3">Protokół</string>
+    <string name="label4">Status</string>
+    <string name="label5">Wybór</string>
+
+    <string name="sensor1">Id urządzenia</string>
+    <string name="sensor2">Nazwa</string>
+    <string name="sensor3">Odczyt</string>
 </resources>
