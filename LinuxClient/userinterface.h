@@ -13,6 +13,10 @@
 #include <QLabel>
 #include "filemanager.h"
 #include "http.h"
+#include "iot.h"
+#include "QTime"
+#include "QTimer"
+#include "QThread"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserInterface; }
@@ -32,13 +36,26 @@ private slots:
   void load_devices();
   void closeEvent(QCloseEvent *event);
 
+  void on_addButton_clicked();
+
+  void on_pushButton_3_clicked();
+
+  void on_connectButton_clicked();
+
 private:
   Http_client http;
   filemanager manager;
   QVector<iot*> devices;
+  QString sensors;
+  QStringList sensors_list;
+  QStringList sensor_units;
+  QStringList sensor_readings;
+  iot *connected_device;
+
+  QThread time;
 
   //Testing the get request
-  QString myURL = "https://www.youtube.com";
+  QString myURL = "http://172.16.0.5/temperature";
 
   Ui::UserInterface *ui;
 };

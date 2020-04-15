@@ -10,6 +10,8 @@ UserInterface::UserInterface(QWidget *parent)
   ui->iot_table->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
   ui->iot_table->horizontalHeader()->setStretchLastSection(true);
 
+  ui->pushButton_3->setVisible(false);
+
   connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
 
   load_devices();
@@ -23,14 +25,65 @@ UserInterface::~UserInterface()
 //Mateusz Gurski
 void UserInterface::on_pushButton_clicked()
 {
-    http.get_request(myURL);
+    QModelIndexList selection = ui->iot_table->selectionModel()->selectedRows();
+
+    if (selection.size() > 0){
+
+        QModelIndex index = selection.at(0);
+
+        int row = index.row();
+
+        if (devices[row]->getProtocol() == 1){
+
+            connected_device = devices[row];
+
+            http.get_request("http://"+connected_device->getIP()+"/sensors");
+
+            ui->pushButton->setVisible(false);
+
+        }
+    }
 }
 
 //Mateusz Gurski
 void UserInterface::http_get_response(QByteArray data)
 {
     QString DataAsString = QString(data);
-    ui->textEdit->setText(data);
+
+    if (ui->pushButton_3->isVisible()){
+
+        sensor_readings.append(data);
+
+        if(sensor_readings.size() == sensor_units.size() && sensor_units.size()>0){
+            for (int i = 0;i<sensor_readings.size();i++) {
+                QString reading = sensors_list[i] + ": " + sensor_readings[i] + " " + sensor_units[i];
+                ui->textEdit->append(reading);
+            }
+            sensor_readings.clear();
+        }
+
+    }
+    else{
+        ui->textEdit->clear();
+        ui->textEdit->setText("Avaiable sensors: " + data);
+
+        sensors = data;
+
+        QStringList sensors_tmp_list = sensors.split(" ");
+
+        sensor_units.clear();
+        for(int i=0;i<sensors_tmp_list.size();i++){
+            QStringList tmp = sensors_tmp_list[i].split(":");
+
+            if (tmp.size() > 1){
+                sensors_list.append(tmp[0]);
+                sensor_units.append(tmp[1]);
+            }
+        }
+
+        ui->pushButton_3->setVisible(true);
+    }
+
 }
 
 //Adam Krizar
@@ -76,4 +129,28 @@ void UserInterface::closeEvent(QCloseEvent *event)
   manager.savedevices(devices);
 }
 
+void UserInterface::on_addButton_clicked()
+{
 
+}
+
+
+void UserInterface::on_pushButton_3_clicked()
+{
+   if(connected_device != nullptr){
+        if (connected_device->getProtocol() == 1){
+
+             http.get_request("http://"+connected_device->getIP()+"/temperature");
+             http.get_request("http://"+connected_device->getIP()+"/humidity");
+
+        }
+   }
+
+}
+
+void UserInterface::on_connectButton_clicked()
+{
+    ui->pushButton_3->setVisible(false);
+    ui->pushButton->setVisible(true);
+    ui->textEdit->clear();
+}

@@ -46,6 +46,7 @@ QVector<iot*> filemanager::loaddevices()
 //Adam Krizar
 void filemanager::savedevices(QVector<iot*> data)
 {
+
   /*
   int t1[4] = {123,123,123,123};
   int t2[4] = {123,123,123,124};
@@ -67,7 +68,11 @@ void filemanager::savedevices(QVector<iot*> data)
   data.push_back(new iot(8, "C13", t8, 1));
   data.push_back(new iot(9, "Kosmos", t9, 1));
   data.push_back(new iot(10, "xd", t10, 1));
-  */
+*/
+
+  //int t1[4] = {172,16,0,5};
+  //data.push_back(new iot(1, "HTTP_TEST", t1, 1));
+
 
   QMessageBox mBox;
   QFile file(filename + ".bin");
