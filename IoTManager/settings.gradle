@@ -1,0 +1,2 @@
+rootProject.name='IoT Manager'
+include ':app'
