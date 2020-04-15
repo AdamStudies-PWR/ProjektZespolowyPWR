@@ -140,8 +140,9 @@ void UserInterface::on_pushButton_3_clicked()
    if(connected_device != nullptr){
         if (connected_device->getProtocol() == 1){
 
-             http.get_request("http://"+connected_device->getIP()+"/temperature");
-             http.get_request("http://"+connected_device->getIP()+"/humidity");
+            for (int i=0;i<sensors_list.size();i++) {
+                http.get_request("http://"+connected_device->getIP()+"/"+sensors_list[i]);
+            }
 
         }
    }
