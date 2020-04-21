@@ -194,7 +194,7 @@
   </action>
   <action name="actionZapisz_dane_z_sesnor">
    <property name="text">
-    <string>Zapisz dane z sesnorów</string>
+    <string>Zapisz dane z sensorów</string>
    </property>
   </action>
   <action name="actionZapisz_dane_po_cze">

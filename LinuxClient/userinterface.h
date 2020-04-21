@@ -11,6 +11,9 @@
 #include <QCheckBox>
 #include <QImage>
 #include <QLabel>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QStringList>
 #include "filemanager.h"
 #include "http.h"
 #include "iot.h"
@@ -41,6 +44,18 @@ private slots:
   void on_pushButton_3_clicked();
 
   void on_connectButton_clicked();
+
+  void on_actionO_programie_triggered();
+
+  void on_actionInstrukcja_obs_ugi_triggered();
+
+  void on_subClose_triggered();
+
+  void on_actionZapisz_dane_z_sesnor_triggered();
+
+  void on_actionZapis_okresowy_triggered();
+
+  void on_deleteButton_clicked();
 
 private:
   Http_client http;
