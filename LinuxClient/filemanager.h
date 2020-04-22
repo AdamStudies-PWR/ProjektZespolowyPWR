@@ -21,6 +21,8 @@ public:
   filemanager();
   QVector<iot*> loaddevices();
   void savedevices(QVector<iot*>);
+
+  void setFilename(QString filename);
 };
 
 #endif // FILEMANAGER_H

@@ -89,3 +89,8 @@ void filemanager::savedevices(QVector<iot*> data)
     file.close();
   }
 }
+
+void filemanager::setFilename(QString filename)
+{
+    this->filename = filename;
+}
