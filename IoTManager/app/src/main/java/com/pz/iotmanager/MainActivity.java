@@ -10,11 +10,17 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
 {
 
     TextView title;
     NavController navBar;
+    private static final String devices_json_filename = "devices.json";
+    public List<Device> devices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,6 +33,21 @@ public class MainActivity extends AppCompatActivity
 
         title = (TextView) findViewById(R.id.textTitle);
         title.setText(R.string.title_devices);
+
+        // Read saved instances of device
+        File file = new File(getFilesDir(), devices_json_filename);
+        devices = Device.readFromFile(file);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        File file = new File(getFilesDir(), devices_json_filename);
+        try {
+            Device.writeToFile(file, devices);
+        } catch (IOException ex)
+        {
+            //TODO handle
+        }
     }
 
 }
