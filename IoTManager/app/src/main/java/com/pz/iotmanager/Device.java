@@ -16,6 +16,9 @@ public class Device {
     public String name;
     public String protocol;
 
+    public List<String> sensors;
+    public List<String> sensor_signs;
+
     public static List<Device> readFromFile(File file)
     {
         ArrayList<Device> devices= new ArrayList<>();
