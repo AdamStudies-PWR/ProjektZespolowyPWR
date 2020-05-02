@@ -22,4 +22,10 @@
         android:name="com.pz.iotmanager.ui.settings.SettingsFragment"
         android:label="@string/title_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/navigation_admin"
+        android:name="com.pz.iotmanager.ui.admin.AdminFragment"
+        android:label="@string/title_admin"
+        tools:layout="@layout/fragment_admin" />
 </navigation>

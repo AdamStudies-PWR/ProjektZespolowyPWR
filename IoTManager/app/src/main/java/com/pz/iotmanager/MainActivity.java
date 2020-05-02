@@ -4,8 +4,10 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.style.BackgroundColorSpan;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         File file = new File(getFilesDir(), devices_json_filename);
         devices = Device.readFromFile(file);
 
+        navView.getMenu().findItem(R.id.navigation_admin).setVisible(false);
     }
 
     @Override
@@ -75,6 +78,13 @@ public class MainActivity extends AppCompatActivity
         {
             //TODO handle
         }
+    }
+
+    public void adminMode(View view)
+    {
+        Switch admin_switch = findViewById(R.id.admin_switch);
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        navView.getMenu().findItem(R.id.navigation_admin).setVisible(admin_switch.isChecked());
     }
 
     public void onConnect(View view) {

@@ -3,11 +3,15 @@
     <string name="title_devices">Urządzenia</string>
     <string name="title_sensors">Sensory</string>
     <string name="title_settings">Ustawienia</string>
+    <string name="title_admin">Tryb programisty</string>
 
     <string name="connect">Połącz</string>
     <string name="delete">Usuń</string>
     <string name="disconnect">Rozłącz</string>
     <string name="add">Dodaj</string>
+
+    <string name="inHint">Polecenie:</string>
+    <string name="adminSwitch">Tryb administratora</string>
 
     <string name="label1">Id</string>
     <string name="label2">Nazwa</string>
