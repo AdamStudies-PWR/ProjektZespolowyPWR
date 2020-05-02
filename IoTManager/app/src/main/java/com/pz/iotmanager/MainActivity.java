@@ -1,5 +1,6 @@
 package com.pz.iotmanager;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.style.BackgroundColorSpan;
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity
     TextView title;
     NavController navBar;
     private static final String devices_json_filename = "devices.json";
+    private final String PREFERENCE_FILE_KEY = "IoTSettings";
+    SharedPreferences preferences;
+    SharedPreferences.Editor edit;
     public List<Device> devices;
 
     public Device selected_device = null;
@@ -66,6 +70,11 @@ public class MainActivity extends AppCompatActivity
         devices = Device.readFromFile(file);
 
         navView.getMenu().findItem(R.id.navigation_admin).setVisible(false);
+
+        preferences = getSharedPreferences(PREFERENCE_FILE_KEY, MODE_PRIVATE);
+        edit = preferences.edit();
+        edit.putBoolean("admin", false);
+        edit.apply();
     }
 
     @Override
@@ -85,6 +94,8 @@ public class MainActivity extends AppCompatActivity
         Switch admin_switch = findViewById(R.id.admin_switch);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.getMenu().findItem(R.id.navigation_admin).setVisible(admin_switch.isChecked());
+        edit.putBoolean("admin", admin_switch.isChecked());
+        edit.apply();
     }
 
     public void onConnect(View view) {

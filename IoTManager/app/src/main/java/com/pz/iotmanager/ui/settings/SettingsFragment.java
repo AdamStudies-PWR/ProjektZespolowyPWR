@@ -1,5 +1,6 @@
 package com.pz.iotmanager.ui.settings;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +18,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pz.iotmanager.MainActivity;
 import com.pz.iotmanager.R;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment
+{
 
     private SettingsViewModel settingsViewModel;
+    private final String PREFERENCE_FILE_KEY = "IoTSettings";
+    SharedPreferences preferences;
+    SharedPreferences.Editor edit;
 
     MainActivity activity;
     TextView title;
@@ -33,6 +38,12 @@ public class SettingsFragment extends Fragment {
 
         title = activity.findViewById(R.id.textTitle);
         title.setText(R.string.title_settings);
+
+        preferences = activity.getSharedPreferences(PREFERENCE_FILE_KEY, activity.MODE_PRIVATE);
+        edit = preferences.edit();
+
+        Switch adminSwitch = root.findViewById(R.id.admin_switch);
+        adminSwitch.setChecked(preferences.getBoolean("admin", false));
 
         return root;
     }
