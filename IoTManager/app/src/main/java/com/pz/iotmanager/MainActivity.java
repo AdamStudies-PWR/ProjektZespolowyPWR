@@ -1,5 +1,6 @@
 package com.pz.iotmanager;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -24,6 +26,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -269,5 +272,197 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    public void sendCommand(View view) {
 
+        EditText inputText = (EditText) findViewById(R.id.inText);
+
+        String text = inputText.getText().toString();
+
+        if(!text.equals(""))
+        {
+            if(text.equals("help"))
+            {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                alertDialog.setTitle("Dostępne polecenia:");
+                alertDialog.setMessage("testwifi - Test łączności WiFi \ntestiot http://0.0.0.0/sensors - Test łączności z IoT");
+                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.show();
+            }
+            if(text.equals("testwifi"))
+            {
+
+                String url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2";
+
+                OkHttpClient okHttpClient = new OkHttpClient();
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                okHttpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                        final String myResponse = e.getMessage().toString();
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                alertDialog.setTitle("Odpowiedź");
+                                alertDialog.setMessage("Problem z połączeniem WiFi");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+                                alertDialog.show();
+                            }
+                        });
+
+
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        if(response.isSuccessful())
+                        {
+                            final String myResponse = response.body().string();
+
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                    alertDialog.setTitle("Odpowiedź");
+                                    alertDialog.setMessage("Wifi aktywne");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                    alertDialog.setTitle("Odpowiedź");
+                                    alertDialog.setMessage("Problem z połączeniem WiFi");
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+            }
+
+            String[] separated = text.split(" ");
+
+            if(separated[0].equals("testiot"))
+            {
+                if(separated.length > 1)
+                {
+                    String url = separated[1];
+
+                    OkHttpClient okHttpClient = new OkHttpClient();
+
+                    Request request = new Request.Builder()
+                            .url(url)
+                            .build();
+
+                    okHttpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                            final String myResponse = e.getMessage().toString();
+
+                            MainActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                    alertDialog.setTitle("Odpowiedź");
+                                    alertDialog.setMessage(myResponse);
+                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    alertDialog.show();
+                                }
+                            });
+
+
+
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            if(response.isSuccessful())
+                            {
+                                final String myResponse = response.body().string();
+
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                        alertDialog.setTitle("Odpowiedź");
+                                        alertDialog.setMessage(myResponse);
+                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                        alertDialog.show();
+                                    }
+                                });
+                            }
+                            else
+                            {
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                                        alertDialog.setTitle("Odpowiedź");
+                                        alertDialog.setMessage("Problem z połączeniem z urządzeniem IoT");
+                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        dialog.dismiss();
+                                                    }
+                                                });
+                                        alertDialog.show();
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+
+
+            }
+        }
+
+    }
 }
