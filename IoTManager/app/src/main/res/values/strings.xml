@@ -12,6 +12,7 @@
 
     <string name="inHint">Polecenie:</string>
     <string name="adminSwitch">Tryb administratora</string>
+    <string name="logSwitch">Zapisuj logi</string>
 
     <string name="label1">Id</string>
     <string name="label2">Nazwa</string>

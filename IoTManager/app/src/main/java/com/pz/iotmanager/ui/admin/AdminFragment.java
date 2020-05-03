@@ -1,11 +1,16 @@
 package com.pz.iotmanager.ui.admin;
 
 import android.app.ActionBar;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -20,7 +25,11 @@ import com.pz.iotmanager.Device;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -39,6 +48,11 @@ public class AdminFragment extends Fragment
 {
 
     private AdminViewModel adminViewModel;
+    private final String PREFERENCE_FILE_KEY = "IoTSettings";
+    private static final String admin_log = "log.txt";
+
+    SharedPreferences preferences;
+    SharedPreferences.Editor edit;
 
     MainActivity activity;
     TextView title;
@@ -52,6 +66,40 @@ public class AdminFragment extends Fragment
 
         title = activity.findViewById(R.id.textTitle);
         title.setText(R.string.title_admin);
+
+        preferences = activity.getSharedPreferences(PREFERENCE_FILE_KEY, activity.MODE_PRIVATE);
+        edit = preferences.edit();
+
+        EditText terminal = root.findViewById(R.id.terminalText);
+
+        if(preferences.getBoolean("logs", false))
+        {
+            Context context = activity.getApplicationContext();
+            try
+            {
+                InputStream inputStream = context.openFileInput(admin_log);
+
+                if ( inputStream != null )
+                {
+                    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    String receiveString = "";
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    while ( (receiveString = bufferedReader.readLine()) != null )
+                    {
+                        terminal.append(receiveString);
+                        stringBuilder.append("\n").append(receiveString);
+                    }
+
+                    inputStream.close();
+                    terminal.setText(stringBuilder.toString());
+                }
+            }
+            catch (FileNotFoundException e) {}
+            catch (IOException e) {}
+        }
+
 
         return root;
     }

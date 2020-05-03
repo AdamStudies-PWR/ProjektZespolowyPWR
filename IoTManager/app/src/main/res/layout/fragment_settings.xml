@@ -30,6 +30,19 @@
                 android:onClick="adminMode"
                 android:text="@string/adminSwitch"
                 android:textColor="@color/colorText" />
+
+            <Switch
+                android:id="@+id/log_switch"
+                android:layout_width="323dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="44dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="44dp"
+                android:enabled="false"
+                android:onClick="setSaveLogs"
+                android:text="@string/logSwitch"
+                android:textColor="@color/colorText" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

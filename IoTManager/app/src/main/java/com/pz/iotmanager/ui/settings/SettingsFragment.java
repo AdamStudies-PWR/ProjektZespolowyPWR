@@ -1,10 +1,13 @@
 package com.pz.iotmanager.ui.settings;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -17,6 +20,12 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.pz.iotmanager.MainActivity;
 import com.pz.iotmanager.R;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class SettingsFragment extends Fragment
 {
@@ -43,7 +52,10 @@ public class SettingsFragment extends Fragment
         edit = preferences.edit();
 
         Switch adminSwitch = root.findViewById(R.id.admin_switch);
+        Switch logSwitch = root.findViewById(R.id.log_switch);
         adminSwitch.setChecked(preferences.getBoolean("admin", false));
+        logSwitch.setEnabled(preferences.getBoolean("admin", false));
+        logSwitch.setChecked(preferences.getBoolean("logs", false));
 
         return root;
     }

@@ -1,15 +1,16 @@
 package com.pz.iotmanager;
 
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.style.BackgroundColorSpan;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -17,25 +18,19 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -49,11 +44,12 @@ public class MainActivity extends AppCompatActivity
     TextView title;
     NavController navBar;
     private static final String devices_json_filename = "devices.json";
+    private static final String admin_log = "log.txt";
     private final String PREFERENCE_FILE_KEY = "IoTSettings";
     SharedPreferences preferences;
     SharedPreferences.Editor edit;
     public List<Device> devices;
-
+    boolean adminMode = false;
     public Device selected_device = null;
 
     @Override
@@ -95,9 +91,20 @@ public class MainActivity extends AppCompatActivity
     public void adminMode(View view)
     {
         Switch admin_switch = findViewById(R.id.admin_switch);
+        Switch log_switch = findViewById(R.id.log_switch);
+
+        log_switch.setEnabled(admin_switch.isChecked());
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         navView.getMenu().findItem(R.id.navigation_admin).setVisible(admin_switch.isChecked());
         edit.putBoolean("admin", admin_switch.isChecked());
+        edit.apply();
+    }
+
+    public void setSaveLogs(View view)
+    {
+        Switch log_switch = findViewById(R.id.log_switch);
+        edit.putBoolean("logs", log_switch.isChecked());
         edit.apply();
     }
 
@@ -272,26 +279,22 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public void sendCommand(View view) {
-
+    public void sendCommand(View view)
+    {
+        final EditText outText = (EditText) findViewById(R.id.terminalText);
+        ScrollView sview = (ScrollView) findViewById(R.id.adminScroll);
         EditText inputText = (EditText) findViewById(R.id.inText);
 
         String text = inputText.getText().toString();
+        inputText.setText("");
 
+        outText.append("\n>: " + text);
         if(!text.equals(""))
         {
             if(text.equals("help"))
             {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle("Dostępne polecenia:");
-                alertDialog.setMessage("testwifi - Test łączności WiFi \ntestiot http://0.0.0.0/sensors - Test łączności z IoT");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialog.show();
+                outText.append("\nDostępne polecenia:");
+                outText.append("\ntestwifi - Test łączności WiFi \ntestiot http://0.0.0.0/sensors - Test łączności z IoT\nclear - Wyczyść ekran");
             }
             if(text.equals("testwifi"))
             {
@@ -304,7 +307,8 @@ public class MainActivity extends AppCompatActivity
                         .url(url)
                         .build();
 
-                okHttpClient.newCall(request).enqueue(new Callback() {
+                okHttpClient.newCall(request).enqueue(new Callback()
+                {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
@@ -313,16 +317,7 @@ public class MainActivity extends AppCompatActivity
                         MainActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                alertDialog.setTitle("Odpowiedź");
-                                alertDialog.setMessage("Problem z połączeniem WiFi");
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-                                        });
-                                alertDialog.show();
+                                outText.append("\nProblem z połączeniem WiFi");
                             }
                         });
 
@@ -339,16 +334,7 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                    alertDialog.setTitle("Odpowiedź");
-                                    alertDialog.setMessage("Wifi aktywne");
-                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    alertDialog.show();
+                                    outText.append("\nWifi aktywne");
                                 }
                             });
                         }
@@ -357,16 +343,7 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                    alertDialog.setTitle("Odpowiedź");
-                                    alertDialog.setMessage("Problem z połączeniem WiFi");
-                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    alertDialog.show();
+                                    outText.append("\nProblem z połączeniem WiFi");
                                 }
                             });
                         }
@@ -375,6 +352,7 @@ public class MainActivity extends AppCompatActivity
 
 
             }
+            if(text.equals("clear")) outText.setText("");
 
             String[] separated = text.split(" ");
 
@@ -399,16 +377,8 @@ public class MainActivity extends AppCompatActivity
                             MainActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                    alertDialog.setTitle("Odpowiedź");
-                                    alertDialog.setMessage(myResponse);
-                                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                            new DialogInterface.OnClickListener() {
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                    alertDialog.show();
+                                    outText.append("\nOdpowiedź: ");
+                                    outText.append(myResponse);
                                 }
                             });
 
@@ -425,16 +395,8 @@ public class MainActivity extends AppCompatActivity
                                 MainActivity.this.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                        alertDialog.setTitle("Odpowiedź");
-                                        alertDialog.setMessage(myResponse);
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-                                        alertDialog.show();
+                                        outText.append("\nOdpowiedź: ");
+                                        outText.append(myResponse);
                                     }
                                 });
                             }
@@ -443,26 +405,34 @@ public class MainActivity extends AppCompatActivity
                                 MainActivity.this.runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                                        alertDialog.setTitle("Odpowiedź");
-                                        alertDialog.setMessage("Problem z połączeniem z urządzeniem IoT");
-                                        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                                new DialogInterface.OnClickListener() {
-                                                    public void onClick(DialogInterface dialog, int which) {
-                                                        dialog.dismiss();
-                                                    }
-                                                });
-                                        alertDialog.show();
+                                        outText.append("\nProblem z połączeniem z urządzeniem IoT");
                                     }
                                 });
                             }
                         }
                     });
                 }
-
-
             }
         }
+        if(preferences.getBoolean("logs", false)) saveLog();
+        sview.fullScroll(View.FOCUS_DOWN);
+    }
 
+    void saveLog()
+    {
+        Context context = getApplicationContext();
+        EditText terminal = (EditText) findViewById(R.id.terminalText);
+        try
+        {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(context.openFileOutput(admin_log, Context.MODE_PRIVATE));
+            Log.println(Log.ERROR,"Zapisywanie!", terminal.getText().toString());
+            outputStreamWriter.write(terminal.getText().toString());
+            outputStreamWriter.close();
+        }
+        catch (IOException ex)
+        {
+            terminal.append("\nERRROR: Błąd zapisywania logów!");
+            terminal.append("\n" + ex.getMessage());
+        }
     }
 }
