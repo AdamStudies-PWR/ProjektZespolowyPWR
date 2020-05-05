@@ -3,19 +3,19 @@
 
 //Mateusz Gurski
 UserInterface::UserInterface(QWidget *parent)
-  : QMainWindow(parent)
-  , ui(new Ui::UserInterface)
+    : QMainWindow(parent)
+    , ui(new Ui::UserInterface)
 {
-  ui->setupUi(this);
-  ui->iot_table->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-  ui->iot_table->horizontalHeader()->setStretchLastSection(true);
+    ui->setupUi(this);
+    ui->iot_table->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->iot_table->horizontalHeader()->setStretchLastSection(true);
 
-  ui->pushButton_3->setVisible(false);
-  ui->textEdit_2->setVisible(false);
+    ui->pushButton_3->setVisible(false);
+    ui->textEdit_2->setVisible(false);
 
-  connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
+    connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
 
-  load_devices();
+    load_devices();
 }
 
 UserInterface::~UserInterface()
@@ -136,39 +136,44 @@ void UserInterface::http_get_response(QByteArray data)
 //Adam Krizar
 void UserInterface::load_devices()
 {
-  devices = manager.loaddevices();
-  if(devices.size() <= 0) return;
-  else
-  {
-    QComboBox *pBox;
-    QCheckBox *cBox;
-    QWidget *widget;
-    QHBoxLayout *layout;
-    QLabel *img;
-    QPixmap pmap("x.png");
-    pmap = pmap.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    ui->iot_table->setRowCount(devices.size());
-    for(int i=0; i<devices.size(); i++)
+    devices = manager.loaddevices();
+    display();
+}
+
+void UserInterface::display()
+{
+    if(devices.size() <= 0) return;
+    else
     {
-      pBox = new QComboBox();
-      pBox->addItem("HTTP");
-      pBox->addItem("MQTT");
-      cBox = new QCheckBox();
-      widget = new QWidget();
-      layout = new QHBoxLayout();
-      layout->setAlignment(Qt::AlignCenter);
-      layout->addWidget(cBox);
-      widget->setLayout(layout);
-      img = new QLabel;
-      img->setPixmap(pmap);
-      img->setAlignment(Qt::AlignCenter);
-      if(devices[i]->getProtocol() == 0) pBox->setCurrentIndex(1);
-      ui->iot_table->setItem(i,0, new QTableWidgetItem(devices[i]->getName()));
-      ui->iot_table->setCellWidget(i, 1, pBox);
-      ui->iot_table->setCellWidget(i, 3, widget);
-      ui->iot_table->setCellWidget(i, 2, img);
+        QComboBox *pBox;
+        QCheckBox *cBox;
+        QWidget *widget;
+        QHBoxLayout *layout;
+        QLabel *img;
+        QPixmap pmap("x.png");
+        pmap = pmap.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        ui->iot_table->setRowCount(devices.size());
+        for(int i=0; i<devices.size(); i++)
+        {
+            pBox = new QComboBox();
+            pBox->addItem("HTTP");
+            pBox->addItem("MQTT");
+            cBox = new QCheckBox();
+            widget = new QWidget();
+            layout = new QHBoxLayout();
+            layout->setAlignment(Qt::AlignCenter);
+            layout->addWidget(cBox);
+            widget->setLayout(layout);
+            img = new QLabel;
+            img->setPixmap(pmap);
+            img->setAlignment(Qt::AlignCenter);
+            if(devices[i]->getProtocol() == 0) pBox->setCurrentIndex(1);
+            ui->iot_table->setItem(i,0, new QTableWidgetItem(devices[i]->getName()));
+            ui->iot_table->setCellWidget(i, 1, pBox);
+            ui->iot_table->setCellWidget(i, 3, widget);
+            ui->iot_table->setCellWidget(i, 2, img);
+        }
     }
-  }
 }
 
 void UserInterface::closeEvent(QCloseEvent *event)
@@ -187,7 +192,8 @@ void UserInterface::on_addButton_clicked()
     if(ok)
     {
         QString ip = QInputDialog::getText(this, "Dodaj", "Adres IP", QLineEdit::Normal, "", &ok);
-        if(ok)
+        QRegExp ipFormat("^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$");
+        if(ok && ipFormat.exactMatch(ip))
         {
             QStringList iplist = ip.split(".");
             ip_ad[0] = iplist.value(0).toInt();
@@ -200,6 +206,7 @@ void UserInterface::on_addButton_clicked()
             {
                 device = new iot(index, name, ip_ad, 0);
                 devices.push_back(device);
+                display();
             }
         }
     }
@@ -238,7 +245,8 @@ void UserInterface::on_actionInstrukcja_obs_ugi_triggered()
 {
     QMessageBox help;
     help.setWindowTitle("Instrukcja");
-    help.setText("Instrukcja obsługi programu \n\n");
+    help.setText("Instrukcja obsługi programu \n\n"
+                 "TODO");
     help.exec();
 }
 
@@ -250,7 +258,7 @@ void UserInterface::on_subClose_triggered()
 void UserInterface::on_actionZapisz_dane_z_sesnor_triggered()
 {
     bool ok;
-    QString fname = QInputDialog::getText(this, "Zapis", "Nazwa pliku", QLineEdit::Normal, "dane_IoT", &ok);
+    QString fname = QInputDialog::getText(this, "Zapis", "Nazwa pliku", QLineEdit::Normal, "appdata", &ok);
 
     if(ok && !fname.isEmpty())
     {
@@ -276,19 +284,54 @@ void UserInterface::on_actionZapis_okresowy_triggered()
 
 void UserInterface::on_deleteButton_clicked()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Usuwa wybrane urządzenie/a z listy");
+        info.exec();
+
+        return;
+    }
+
     QModelIndexList selection = ui->iot_table->selectionModel()->selectedRows();
 
     if (selection.size() > 0)
     {
+        QMessageBox confirm;
+        confirm.setText("Czy na pewno chcesz usunąć wybrane urządzenie?");
+        confirm.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+        confirm.exec();
+
         QModelIndex index = selection.at(0);
         int row = index.row();
 
         devices.removeAt(row);
+
+        display();
     }
+}
+
+void UserInterface::on_pushButton_2_clicked()
+{
+
 }
 
 void UserInterface::on_actionTryb_programisty_triggered()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Pozwala przejść w tryb programisty:\n\n"
+                     "Sprawdzenie łączności Wi-Fi - automatyczne\n"
+                     "Test łączności z ręcznie wpisanym adresem - należy ręcznie zmienić "
+                     "domyślne 0.0.0.0 na adres, z którym chcemy sprawdzić łączność");
+        info.exec();
+
+        return;
+    }
+
 
     if(ui->textEdit_2->isVisible())
     {
@@ -321,3 +364,18 @@ void UserInterface::on_actionTryb_programisty_triggered()
     }
 }
 
+
+void UserInterface::on_helpButton_clicked()
+{
+    if(helpmode)
+    {
+        helpmode=false;
+        this->setCursor(Qt::ArrowCursor);
+    }
+    else
+    {
+        helpmode=true;
+        this->setCursor(Qt::WhatsThisCursor);
+
+    }
+}

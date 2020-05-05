@@ -221,7 +221,7 @@
   </action>
   <action name="subClose">
    <property name="text">
-    <string>Zakończ</string>
+    <string>Zakończ bez zapisywania</string>
    </property>
   </action>
   <action name="actionTryb_programisty">

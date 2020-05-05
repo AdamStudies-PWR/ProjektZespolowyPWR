@@ -16,13 +16,13 @@ using namespace std;
 class filemanager
 {
 private:
-  QString filename = "appdata";
+    QString filename = "appdata";
 public:
-  filemanager();
-  QVector<iot*> loaddevices();
-  void savedevices(QVector<iot*>);
+    filemanager();
+    QVector<iot*> loaddevices();
+    void savedevices(QVector<iot*>);
 
-  void setFilename(QString filename);
+    void setFilename(QString filename);
 };
 
 #endif // FILEMANAGER_H
