@@ -26,6 +26,16 @@ UserInterface::~UserInterface()
 //Mateusz Gurski
 void UserInterface::on_pushButton_clicked()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Łączy się z wybranym urządzeniem");
+        info.exec();
+
+        return;
+    }
+
     QModelIndexList selection = ui->iot_table->selectionModel()->selectedRows();
 
     if (selection.size() > 0){
@@ -146,9 +156,6 @@ void UserInterface::display()
     else
     {
         QComboBox *pBox;
-        QCheckBox *cBox;
-        QWidget *widget;
-        QHBoxLayout *layout;
         QLabel *img;
         QPixmap pmap("x.png");
         pmap = pmap.scaled(20, 20, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -158,19 +165,12 @@ void UserInterface::display()
             pBox = new QComboBox();
             pBox->addItem("HTTP");
             pBox->addItem("MQTT");
-            cBox = new QCheckBox();
-            widget = new QWidget();
-            layout = new QHBoxLayout();
-            layout->setAlignment(Qt::AlignCenter);
-            layout->addWidget(cBox);
-            widget->setLayout(layout);
             img = new QLabel;
             img->setPixmap(pmap);
             img->setAlignment(Qt::AlignCenter);
             if(devices[i]->getProtocol() == 0) pBox->setCurrentIndex(1);
             ui->iot_table->setItem(i,0, new QTableWidgetItem(devices[i]->getName()));
             ui->iot_table->setCellWidget(i, 1, pBox);
-            ui->iot_table->setCellWidget(i, 3, widget);
             ui->iot_table->setCellWidget(i, 2, img);
         }
     }
@@ -178,11 +178,23 @@ void UserInterface::display()
 
 void UserInterface::closeEvent(QCloseEvent *event)
 {
-  manager.savedevices(devices);
+    manager.savedevices(devices);
 }
 
 void UserInterface::on_addButton_clicked()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Dodaje urządzenie o podanych informacjach:\n"
+                     "Nazwa\n"
+                     "Numer IP w formacie 192.168.0.1");
+        info.exec();
+
+        return;
+    }
+
     int ip_ad[4];
     iot* device;
     int index = devices.size();
@@ -214,6 +226,16 @@ void UserInterface::on_addButton_clicked()
 
 void UserInterface::on_pushButton_3_clicked()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Wyświetla dane odczytane z połączonego czujnika");
+        info.exec();
+
+        return;
+    }
+
    if(connected_device != nullptr){
         if (connected_device->getProtocol() == 1){
 
@@ -226,6 +248,16 @@ void UserInterface::on_pushButton_3_clicked()
 
 void UserInterface::on_connectButton_clicked()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Rozłącza urządzenie i czyści pole tekstowe");
+        info.exec();
+
+        return;
+    }
+
     ui->pushButton_3->setVisible(false);
     ui->pushButton->setVisible(true);
     ui->textEdit->clear();
@@ -233,6 +265,16 @@ void UserInterface::on_connectButton_clicked()
 
 void UserInterface::on_actionO_programie_triggered()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Wyświetla informacje o programie");
+        info.exec();
+
+        return;
+    }
+
     QMessageBox info;
     info.setWindowTitle("O programie");
     info.setText("Informacje o programie \n\n"
@@ -243,15 +285,42 @@ void UserInterface::on_actionO_programie_triggered()
 
 void UserInterface::on_actionInstrukcja_obs_ugi_triggered()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Wyświetla instrukcję obsługi programu");
+        info.exec();
+
+        return;
+    }
+
     QMessageBox help;
     help.setWindowTitle("Instrukcja");
     help.setText("Instrukcja obsługi programu \n\n"
-                 "TODO");
+                 "Lista urządzeń zapisuje się automatycznie przy zamknięciu programu!\n\n"
+                 "W celu dodania nowego urządzenia do listy urządzeń należy wcisnąć przycisk 'Dodaj'.\n\n"
+                 "Żeby wybrać urządzenie należy wcisnąć numer odpowiadającego mu wiersza po lewej.\n\n"
+                 "Po wybraniu wiersza można połączyć się z wybranym urządzeniem za pomocą przycisku "
+                 "'Połącz'. \n Następnie w celu uzyskania odczytu należy wcisnąć 'Odczyt'.\n\n"
+                 "Do zakończenia pracy na obecnym urządzeniu należy wcisnąć 'Rozłącz'.\n\n"
+                 "Żeby usunąć urządzenie z listy należy po wybraniu go w tablicy wcisnąć 'Usuń'.\n\n"
+                 "W celu zapisania listy urządzeń należy otworzyć zakładkę 'Plik'.");
     help.exec();
 }
 
 void UserInterface::on_subClose_triggered()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Zamyka program");
+        info.exec();
+
+        return;
+    }
+
     QCoreApplication::quit();
 }
 
@@ -269,8 +338,20 @@ void UserInterface::on_actionZapisz_dane_z_sesnor_triggered()
 
 void UserInterface::on_actionZapis_okresowy_triggered()
 {
+    if(helpmode)
+    {
+        QMessageBox info;
+        info.setWindowTitle("Pomoc");
+        info.setText("Pozwala na ustalenie okresu czasu, co jaki ma być dokonywany zapis"
+                     "oraz nazwy pliku, do którego dane o urządzeniach mają być zapisane. \n"
+                     "Okres czasu może być w przedziale od 1 do 360 minut. ");
+        info.exec();
+
+        return;
+    }
+
     bool ok;
-    int time = QInputDialog::getInt(this, "Zapis okresowy", "Przedzial czasu w minutach:", 5, 1, 60, 1, &ok);
+    int time = QInputDialog::getInt(this, "Zapis okresowy", "Przedzial czasu w minutach:", 5, 1, 360, 1, &ok);
     if(ok)
     {
         QString fname = QInputDialog::getText(this, "Zapis okresowy", "Nazwa pliku", QLineEdit::Normal, "dane_IoT", &ok);
@@ -288,7 +369,7 @@ void UserInterface::on_deleteButton_clicked()
     {
         QMessageBox info;
         info.setWindowTitle("Pomoc");
-        info.setText("Usuwa wybrane urządzenie/a z listy");
+        info.setText("Usuwa wybrane urządzenie z listy");
         info.exec();
 
         return;
@@ -301,14 +382,17 @@ void UserInterface::on_deleteButton_clicked()
         QMessageBox confirm;
         confirm.setText("Czy na pewno chcesz usunąć wybrane urządzenie?");
         confirm.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        confirm.exec();
+        int ret = confirm.exec();
 
-        QModelIndex index = selection.at(0);
-        int row = index.row();
+        if(ret==QMessageBox::Ok)
+        {
+            QModelIndex index = selection.at(0);
+            int row = index.row();
 
-        devices.removeAt(row);
+            devices.removeAt(row);
 
-        display();
+            display();
+        }
     }
 }
 

@@ -19,6 +19,9 @@
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
        <widget class="QTableWidget" name="iot_table">
+        <property name="columnCount">
+         <number>3</number>
+        </property>
         <column>
          <property name="text">
           <string>Nazwa</string>
@@ -32,11 +35,6 @@
         <column>
          <property name="text">
           <string>Status</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Wybór</string>
          </property>
         </column>
        </widget>
@@ -221,7 +219,7 @@
   </action>
   <action name="subClose">
    <property name="text">
-    <string>Zakończ bez zapisywania</string>
+    <string>Zakończ</string>
    </property>
   </action>
   <action name="actionTryb_programisty">
