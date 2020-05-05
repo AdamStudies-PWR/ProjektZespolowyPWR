@@ -11,6 +11,7 @@ UserInterface::UserInterface(QWidget *parent)
   ui->iot_table->horizontalHeader()->setStretchLastSection(true);
 
   ui->pushButton_3->setVisible(false);
+  ui->textEdit_2->setVisible(false);
 
   connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
 
@@ -43,12 +44,50 @@ void UserInterface::on_pushButton_clicked()
 
         }
     }
+    else
+    {
+        ui->textEdit_2->setText("No device selected");
+    }
 }
 
 //Mateusz Gurski
 void UserInterface::http_get_response(QByteArray data)
 {
     QString DataAsString = QString(data);
+
+    if(wifi_connection_test)
+    {
+        if(data.size() > 0)
+        {
+            ui->textEdit_2->append("WiFi connection seems OK");
+            wifi_connection_test = false;
+            return;
+        }
+        else
+        {
+            ui->textEdit_2->append("Check your WiFi connection");
+            wifi_connection_test = false;
+            return;
+        }
+    }
+
+    if(iot_connection_test)
+    {
+        if(data.size() > 0)
+        {
+            ui->textEdit_2->append("Response received: ");
+            ui->textEdit_2->append(data);
+            iot_connection_test = false;
+            return;
+        }
+        else
+        {
+            ui->textEdit_2->append("IoT not responding.");
+            iot_connection_test = false;
+            return;
+        }
+    }
+
 
     if (ui->pushButton_3->isVisible()){
 
@@ -68,6 +107,14 @@ void UserInterface::http_get_response(QByteArray data)
         ui->textEdit->setText("Avaiable sensors: " + data);
 
         sensors = data;
+
+        if (sensors.size() == 0)
+        {
+            ui->textEdit_2->setText("No sensors detected. Device ip may be wrong or "
+                                    "the device is offline");
+
+            return;
+        }
 
         QStringList sensors_tmp_list = sensors.split(" ");
 
@@ -134,7 +181,7 @@ void UserInterface::on_addButton_clicked()
     int ip_ad[4];
     iot* device;
     int index = devices.size();
-    bool ok, correct;
+    bool ok, correct=true;
 
     QString name = QInputDialog::getText(this, "Dodaj", "Nazwa urządzenia", QLineEdit::Normal, "", &ok);
     if(ok)
@@ -239,3 +286,38 @@ void UserInterface::on_deleteButton_clicked()
         devices.removeAt(row);
     }
 }
+
+void UserInterface::on_actionTryb_programisty_triggered()
+{
+
+    if(ui->textEdit_2->isVisible())
+    {
+        ui->textEdit_2->setVisible(false);
+    }
+    else
+    {
+        ui->textEdit_2->setVisible(true);
+
+        wifi_connection_test = true;
+
+        ui->textEdit_2->setText("Running Wifi connection test..");
+
+        http.get_request("https://postman-echo.com/get?foo1");
+
+        bool iot_test;
+
+        QString fname = QInputDialog::getText(this, "Test łączności z IoT", "Wpisz adres zapytania", QLineEdit::Normal, "http://0.0.0.0/sensors", &iot_test);
+
+        if(iot_test && !fname.isEmpty())
+        {
+            ui->textEdit_2->append("Running app<->IoT connection test..");
+
+            iot_connection_test = true;
+
+            http.get_request(fname);
+
+        }
+
+    }
+}
+

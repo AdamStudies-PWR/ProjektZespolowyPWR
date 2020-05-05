@@ -57,6 +57,10 @@ private slots:
 
   void on_deleteButton_clicked();
 
+  void on_actionTryb_programisty_triggered();
+
+  void on_pushButton_2_clicked();
+
 private:
   Http_client http;
   filemanager manager;
@@ -66,6 +70,9 @@ private:
   QStringList sensor_units;
   QStringList sensor_readings;
   iot *connected_device;
+
+  bool wifi_connection_test = false;
+  bool iot_connection_test = false;
 
   QThread time;
 

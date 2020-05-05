@@ -49,6 +49,22 @@
        <widget class="QTextEdit" name="textEdit"/>
       </item>
       <item>
+       <widget class="QTextEdit" name="textEdit_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>120</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -173,6 +189,7 @@
     </property>
     <addaction name="actionInstrukcja_obs_ugi"/>
     <addaction name="actionO_programie"/>
+    <addaction name="actionTryb_programisty"/>
    </widget>
    <addaction name="menuPlik"/>
    <addaction name="menuPomoc"/>
@@ -205,6 +222,11 @@
   <action name="subClose">
    <property name="text">
     <string>Zakończ</string>
+   </property>
+  </action>
+  <action name="actionTryb_programisty">
+   <property name="text">
+    <string>Tryb programisty</string>
    </property>
   </action>
  </widget>
