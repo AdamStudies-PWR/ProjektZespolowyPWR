@@ -36,7 +36,7 @@ void UserInterface::on_pushButton_clicked()
         return;
     }
 
-    QModelIndexList selection = ui->iot_table->selectionModel()->selectedRows();
+    QModelIndexList selection = ui->iot_table->selectionModel()->selection().indexes();
 
     if (selection.size() > 0){
 
@@ -176,6 +176,8 @@ void UserInterface::display()
     }
 }
 
+
+
 void UserInterface::closeEvent(QCloseEvent *event)
 {
     manager.savedevices(devices);
@@ -216,9 +218,22 @@ void UserInterface::on_addButton_clicked()
 
             if(correct)
             {
-                device = new iot(index, name, ip_ad, 0);
-                devices.push_back(device);
-                display();
+
+                QString protocol = QInputDialog::getText(this, "Dodaj", "Protokół", QLineEdit::Normal, "", &ok);
+
+                int p = 0;
+
+                if(ok)
+                {
+                    if(protocol == "http" || protocol == "HTTP"){
+                      p = 1;
+                    }
+
+                    device = new iot(index, name, ip_ad, p);
+                    devices.push_back(device);
+                    display();
+
+                }
             }
         }
     }
@@ -396,10 +411,6 @@ void UserInterface::on_deleteButton_clicked()
     }
 }
 
-void UserInterface::on_pushButton_2_clicked()
-{
-
-}
 
 void UserInterface::on_actionTryb_programisty_triggered()
 {

@@ -60,8 +60,6 @@ private slots:
 
     void on_actionTryb_programisty_triggered();
 
-    void on_pushButton_2_clicked();
-
     void on_helpButton_clicked();
 
 private:
