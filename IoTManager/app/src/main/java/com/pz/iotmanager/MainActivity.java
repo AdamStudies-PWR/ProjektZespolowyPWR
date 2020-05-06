@@ -23,6 +23,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -31,12 +34,17 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -181,6 +189,99 @@ public class MainActivity extends AppCompatActivity
             });
 
         }
+        else
+        {
+            String ip = "";
+
+            for (int i = 0;i<test.address.size();i++)
+            {
+                ip+=test.address.get(i);
+
+                if(i!=test.address.size()-1)
+                {
+                    ip+=".";
+                }
+            }
+
+            String url = "tcp://"+ip+":1883";
+
+            String subscriberId = UUID.randomUUID().toString();
+            IMqttClient subscriber = null;
+            try {
+                subscriber = new MqttClient(url,subscriberId);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setAutomaticReconnect(true);
+            options.setCleanSession(true);
+            options.setConnectionTimeout(10);
+            // Connect to the MQTT server
+            try {
+                subscriber.connect(options);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            //log("Connected to "+brokerUrl+" with client ID "+client.getClientId());
+
+            // Subscribe to the requested topic
+            // The QoS specified is the maximum level that messages will be sent to the client at.
+            // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
+            // be downgraded to 1 when delivering to the client but messages published at 1 and 0
+            // will be received at the same level they were published at.
+            //log("Subscribing to topic \""+topicName+"\" qos "+qos);
+            CountDownLatch receivedSignal = new CountDownLatch(1);
+            try {
+                subscriber.subscribe("testTopic", (topic, msg) -> {
+                    String payload = new String(msg.getPayload());
+                    final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
+
+                    final TableRow tableRow = new TableRow(MainActivity.this);
+
+                    tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    TextView id_urzadzenia = new TextView(MainActivity.this);
+
+                    id_urzadzenia.setText("1");
+                    id_urzadzenia.setGravity(Gravity.CENTER);
+
+                    TextView nazwa = new TextView(MainActivity.this);
+
+                    nazwa.setText(url);
+                    nazwa.setGravity(Gravity.CENTER);
+
+                    TextView odczyt = new TextView(MainActivity.this);
+
+                    odczyt.setText(payload);
+                    odczyt.setGravity(Gravity.CENTER);
+
+                    tableRow.addView(id_urzadzenia);
+                    tableRow.addView(nazwa);
+                    tableRow.addView(odczyt);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tableLayout.addView(tableRow);
+                        }
+                    });
+                    receivedSignal.countDown();
+                });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            try {
+                receivedSignal.await(2, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // Disconnect the client from the server
+                try {
+                    subscriber.disconnect();
+                } catch (MqttException ex) {
+                    ex.printStackTrace();
+                }
+                //log("Disconnected");
+            }
+        }
 
     }
 
@@ -274,6 +375,98 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
+            }
+            else
+            {
+                String ip = "";
+
+                for (int i = 0;i<device.address.size();i++)
+                {
+                    ip+=device.address.get(i);
+
+                    if(i!=device.address.size()-1)
+                    {
+                        ip+=".";
+                    }
+                }
+                String url = "tcp://"+ip+":1883";
+
+                String subscriberId = UUID.randomUUID().toString();
+                IMqttClient subscriber = null;
+                try {
+                    subscriber = new MqttClient(url,subscriberId);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                MqttConnectOptions options = new MqttConnectOptions();
+                options.setAutomaticReconnect(true);
+                options.setCleanSession(true);
+                options.setConnectionTimeout(10);
+                // Connect to the MQTT server
+                try {
+                    subscriber.connect(options);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                //log("Connected to "+brokerUrl+" with client ID "+client.getClientId());
+
+                // Subscribe to the requested topic
+                // The QoS specified is the maximum level that messages will be sent to the client at.
+                // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
+                // be downgraded to 1 when delivering to the client but messages published at 1 and 0
+                // will be received at the same level they were published at.
+                //log("Subscribing to topic \""+topicName+"\" qos "+qos);
+                CountDownLatch receivedSignal = new CountDownLatch(1);
+                try {
+                    subscriber.subscribe("testTopic", (topic, msg) -> {
+                        String payload = new String(msg.getPayload());
+                        final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
+
+                        final TableRow tableRow = new TableRow(MainActivity.this);
+
+                        tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                        TextView id_urzadzenia = new TextView(MainActivity.this);
+
+                        id_urzadzenia.setText("1");
+                        id_urzadzenia.setGravity(Gravity.CENTER);
+
+                        TextView nazwa = new TextView(MainActivity.this);
+
+                        nazwa.setText(url);
+                        nazwa.setGravity(Gravity.CENTER);
+
+                        TextView odczyt = new TextView(MainActivity.this);
+
+                        odczyt.setText(payload);
+                        odczyt.setGravity(Gravity.CENTER);
+
+                        tableRow.addView(id_urzadzenia);
+                        tableRow.addView(nazwa);
+                        tableRow.addView(odczyt);
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tableLayout.addView(tableRow);
+                            }
+                        });
+                        receivedSignal.countDown();
+                    });
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    receivedSignal.await(2, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Disconnect the client from the server
+                    try {
+                        subscriber.disconnect();
+                    } catch (MqttException ex) {
+                        ex.printStackTrace();
+                    }
+                    //log("Disconnected");
+                }
             }
         }
     }
