@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ProjektZespolowyPWR-Android.iml" filepath="$PROJECT_DIR$/.idea/modules/ProjektZespolowyPWR-Android.iml" group="ProjektZespolowyPWR-Android" />
+      <module fileurl="file://$PROJECT_DIR$/ProjektZespolowyPWR.iml" filepath="$PROJECT_DIR$/ProjektZespolowyPWR.iml" group="ProjektZespolowyPWR" />
     </modules>
   </component>
 </project>

@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="org.eclipse.paho.client.mqttv3-1.2.4-sources">
-    <CLASSES />
-    <JAVADOC />
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/IoTManager/app/libs/org.eclipse.paho.client.mqttv3-1.2.4-sources.jar!/" />
-    </SOURCES>
-  </library>
-</component>
