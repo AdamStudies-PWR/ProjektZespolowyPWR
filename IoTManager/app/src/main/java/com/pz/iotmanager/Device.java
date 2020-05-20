@@ -15,7 +15,6 @@ public class Device {
     public List<Integer> address;
     public String name;
     public String protocol;
-    public int id = -1;
 
     public List<String> sensors;
     public List<String> sensor_signs;

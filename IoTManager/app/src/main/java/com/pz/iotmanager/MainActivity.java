@@ -1,8 +1,6 @@
 package com.pz.iotmanager;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,7 +15,6 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -26,8 +23,10 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +34,17 @@ import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import org.eclipse.paho.client.mqttv3.MqttClient;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -78,7 +82,6 @@ public class MainActivity extends AppCompatActivity
         edit = preferences.edit();
         edit.putBoolean("admin", false);
         edit.apply();
-
     }
 
     @Override
@@ -91,12 +94,6 @@ public class MainActivity extends AppCompatActivity
         {
             //TODO handle
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        display();
     }
 
     public void adminMode(View view)
@@ -119,107 +116,32 @@ public class MainActivity extends AppCompatActivity
         edit.apply();
     }
 
-    @SuppressLint("ResourceType")
-    public void display()
-    {
-        final TableLayout tl = (TableLayout) findViewById(R.id.device_table);
-
-        if(devices.size() > 0){
-            tl.removeAllViewsInLayout();
-        }
-
-        for(int i = 0;i<devices.size();i++){
-
-            final TableRow tableRow = new TableRow(MainActivity.this);
-
-            tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-            tableRow.setId(1000+i);
-
-            TextView id = new TextView(MainActivity.this);
-
-            String text_id = "" + i;
-
-            id.setText(text_id);
-
-            TextView nazwa = new TextView(MainActivity.this);
-            nazwa.setText(devices.get(i).name);
-
-            TextView protokol = new TextView(MainActivity.this);
-            protokol.setText(devices.get(i).protocol);
-
-            TextView status = new TextView(MainActivity.this);
-            status.setId(1111);
-
-            TextView wybor = new TextView(MainActivity.this);
-
-            tableRow.addView(id);
-            tableRow.addView(nazwa);
-            tableRow.addView(protokol);
-            tableRow.addView(status);
-            tableRow.addView(wybor);
-
-            tableRow.setClickable(true);
-
-
-            tableRow.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    TextView st = (TextView) v.findViewById(1111);
-
-                    for (int l = 0; l < devices.size(); l++) {
-                        TableRow row = (TableRow) tl.findViewById(1000+l);
-
-                        TextView st2 = (TextView) row.findViewById(1111);
-
-                        st2.setText("");
-                    }
-                    st.setText("Wybrano");
-
-                    selected_device = devices.get(v.getId()-1000);
-
-                }
-            });
-
-            MainActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tl.addView(tableRow);
-                }
-            });
-
-        }
-
-    }
-
     public void onConnect(View view) {
 
         //Chwilowo do testów. Zmieni się jak będzie działało wyświetlanie urządzeń
 
-        //List<Integer> adres = new ArrayList<>();
+        List<Integer> adres = new ArrayList<>();
 
-        //adres.addAll(Arrays.asList(172, 16, 0, 5));
+        adres.addAll(Arrays.asList(172, 16, 0, 5));
 
-        //Device test = new Device();
+        Device test = new Device();
 
-        //test.address = adres;
-        //test.name = "test";
-        //test.protocol = "http";
+        test.address = adres;
+        test.name = "test";
+        test.protocol = "http";
 
-        //selected_device = test;
+        selected_device = test;
 
-        if (selected_device.protocol.equals("http") || selected_device.protocol.equals("HTTP") || selected_device.protocol.equals("Http"))
+        if (selected_device.protocol == "http")
         {
 
             String ip = "";
 
-            for (int i = 0;i<selected_device.address.size();i++)
+            for (int i = 0;i<test.address.size();i++)
             {
-                ip+=selected_device.address.get(i);
+                ip+=test.address.get(i);
 
-                if(i!=selected_device.address.size()-1)
+                if(i!=test.address.size()-1)
                 {
                     ip+=".";
                 }
@@ -267,6 +189,99 @@ public class MainActivity extends AppCompatActivity
             });
 
         }
+        else
+        {
+            String ip = "";
+
+            for (int i = 0;i<test.address.size();i++)
+            {
+                ip+=test.address.get(i);
+
+                if(i!=test.address.size()-1)
+                {
+                    ip+=".";
+                }
+            }
+
+            String url = "tcp://"+ip+":1883";
+
+            String subscriberId = UUID.randomUUID().toString();
+            IMqttClient subscriber = null;
+            try {
+                subscriber = new MqttClient(url,subscriberId);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setAutomaticReconnect(true);
+            options.setCleanSession(true);
+            options.setConnectionTimeout(10);
+            // Connect to the MQTT server
+            try {
+                subscriber.connect(options);
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            //log("Connected to "+brokerUrl+" with client ID "+client.getClientId());
+
+            // Subscribe to the requested topic
+            // The QoS specified is the maximum level that messages will be sent to the client at.
+            // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
+            // be downgraded to 1 when delivering to the client but messages published at 1 and 0
+            // will be received at the same level they were published at.
+            //log("Subscribing to topic \""+topicName+"\" qos "+qos);
+            CountDownLatch receivedSignal = new CountDownLatch(1);
+            try {
+                subscriber.subscribe("testTopic", (topic, msg) -> {
+                    String payload = new String(msg.getPayload());
+                    final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
+
+                    final TableRow tableRow = new TableRow(MainActivity.this);
+
+                    tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                    TextView id_urzadzenia = new TextView(MainActivity.this);
+
+                    id_urzadzenia.setText("1");
+                    id_urzadzenia.setGravity(Gravity.CENTER);
+
+                    TextView nazwa = new TextView(MainActivity.this);
+
+                    nazwa.setText(url);
+                    nazwa.setGravity(Gravity.CENTER);
+
+                    TextView odczyt = new TextView(MainActivity.this);
+
+                    odczyt.setText(payload);
+                    odczyt.setGravity(Gravity.CENTER);
+
+                    tableRow.addView(id_urzadzenia);
+                    tableRow.addView(nazwa);
+                    tableRow.addView(odczyt);
+
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            tableLayout.addView(tableRow);
+                        }
+                    });
+                    receivedSignal.countDown();
+                });
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+            try {
+                receivedSignal.await(2, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                // Disconnect the client from the server
+                try {
+                    subscriber.disconnect();
+                } catch (MqttException ex) {
+                    ex.printStackTrace();
+                }
+                //log("Disconnected");
+            }
+        }
 
     }
 
@@ -277,7 +292,7 @@ public class MainActivity extends AppCompatActivity
         {
             final Device device = selected_device;
 
-            if(device.protocol.equals("http") || device.protocol.equals("HTTP") || device.protocol.equals("Http"))
+            if(device.protocol == "http")
             {
 
                 String ip = "";
@@ -360,6 +375,98 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
+            }
+            else
+            {
+                String ip = "";
+
+                for (int i = 0;i<device.address.size();i++)
+                {
+                    ip+=device.address.get(i);
+
+                    if(i!=device.address.size()-1)
+                    {
+                        ip+=".";
+                    }
+                }
+                String url = "tcp://"+ip+":1883";
+
+                String subscriberId = UUID.randomUUID().toString();
+                IMqttClient subscriber = null;
+                try {
+                    subscriber = new MqttClient(url,subscriberId);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                MqttConnectOptions options = new MqttConnectOptions();
+                options.setAutomaticReconnect(true);
+                options.setCleanSession(true);
+                options.setConnectionTimeout(10);
+                // Connect to the MQTT server
+                try {
+                    subscriber.connect(options);
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                //log("Connected to "+brokerUrl+" with client ID "+client.getClientId());
+
+                // Subscribe to the requested topic
+                // The QoS specified is the maximum level that messages will be sent to the client at.
+                // For instance if QoS 1 is specified, any messages originally published at QoS 2 will
+                // be downgraded to 1 when delivering to the client but messages published at 1 and 0
+                // will be received at the same level they were published at.
+                //log("Subscribing to topic \""+topicName+"\" qos "+qos);
+                CountDownLatch receivedSignal = new CountDownLatch(1);
+                try {
+                    subscriber.subscribe("testTopic", (topic, msg) -> {
+                        String payload = new String(msg.getPayload());
+                        final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
+
+                        final TableRow tableRow = new TableRow(MainActivity.this);
+
+                        tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+                        TextView id_urzadzenia = new TextView(MainActivity.this);
+
+                        id_urzadzenia.setText("1");
+                        id_urzadzenia.setGravity(Gravity.CENTER);
+
+                        TextView nazwa = new TextView(MainActivity.this);
+
+                        nazwa.setText(url);
+                        nazwa.setGravity(Gravity.CENTER);
+
+                        TextView odczyt = new TextView(MainActivity.this);
+
+                        odczyt.setText(payload);
+                        odczyt.setGravity(Gravity.CENTER);
+
+                        tableRow.addView(id_urzadzenia);
+                        tableRow.addView(nazwa);
+                        tableRow.addView(odczyt);
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tableLayout.addView(tableRow);
+                            }
+                        });
+                        receivedSignal.countDown();
+                    });
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    receivedSignal.await(2, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Disconnect the client from the server
+                    try {
+                        subscriber.disconnect();
+                    } catch (MqttException ex) {
+                        ex.printStackTrace();
+                    }
+                    //log("Disconnected");
+                }
             }
         }
     }
@@ -519,13 +626,6 @@ public class MainActivity extends AppCompatActivity
         {
             terminal.append("\nERRROR: Błąd zapisywania logów!");
             terminal.append("\n" + ex.getMessage());
-        }
-    }
-
-    public void deleteDevice(View view) {
-        if(selected_device != null){
-            devices.remove(selected_device);
-            display();
         }
     }
 }

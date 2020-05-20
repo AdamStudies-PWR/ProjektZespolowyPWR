@@ -4,32 +4,10 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/editText5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editText"
-        android:layout_alignParentBottom="false"
-        android:layout_marginTop="65dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Protocol" />
-
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editText"
-        android:layout_marginTop="10dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="IP" />
-
-    <EditText
         android:id="@+id/editText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Name" />
-
 </RelativeLayout>
