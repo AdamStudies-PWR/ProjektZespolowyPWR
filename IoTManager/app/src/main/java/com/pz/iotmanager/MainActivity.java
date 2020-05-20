@@ -1,6 +1,8 @@
 package com.pz.iotmanager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +17,7 @@ import android.widget.Switch;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -27,6 +30,7 @@ import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +100,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        display();
+    }
+
     public void adminMode(View view)
     {
         Switch admin_switch = findViewById(R.id.admin_switch);
@@ -116,32 +126,108 @@ public class MainActivity extends AppCompatActivity
         edit.apply();
     }
 
+    @SuppressLint("ResourceType")
+    public void display()
+    {
+        final TableLayout tl = (TableLayout) findViewById(R.id.device_table);
+
+        if(devices.size() > 0){
+            tl.removeAllViewsInLayout();
+        }
+
+        for(int i = 0;i<devices.size();i++){
+
+            final TableRow tableRow = new TableRow(MainActivity.this);
+
+            tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+            tableRow.setId(1000+i);
+
+            TextView id = new TextView(MainActivity.this);
+
+            String text_id = "" + i;
+
+            id.setText(text_id);
+
+            TextView nazwa = new TextView(MainActivity.this);
+            nazwa.setText(devices.get(i).name);
+
+            TextView protokol = new TextView(MainActivity.this);
+            protokol.setText(devices.get(i).protocol);
+
+            TextView status = new TextView(MainActivity.this);
+            status.setId(1111);
+
+            TextView wybor = new TextView(MainActivity.this);
+
+            tableRow.addView(id);
+            tableRow.addView(nazwa);
+            tableRow.addView(protokol);
+            tableRow.addView(status);
+            tableRow.addView(wybor);
+
+            tableRow.setClickable(true);
+
+
+            tableRow.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+
+                    TextView st = (TextView) v.findViewById(1111);
+
+                    for (int l = 0; l < devices.size(); l++) {
+                        TableRow row = (TableRow) tl.findViewById(1000+l);
+
+                        TextView st2 = (TextView) row.findViewById(1111);
+
+                        st2.setText("");
+                    }
+                    st.setText("Wybrano");
+
+                    selected_device = devices.get(v.getId()-1000);
+
+                }
+            });
+
+            MainActivity.this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    tl.addView(tableRow);
+                }
+            });
+
+        }
+
+    }
+
+
     public void onConnect(View view) {
 
         //Chwilowo do testów. Zmieni się jak będzie działało wyświetlanie urządzeń
 
-        List<Integer> adres = new ArrayList<>();
+        //List<Integer> adres = new ArrayList<>();
 
-        adres.addAll(Arrays.asList(172, 16, 0, 5));
+        //adres.addAll(Arrays.asList(172, 16, 0, 5));
 
-        Device test = new Device();
+        //Device test = new Device();
 
-        test.address = adres;
-        test.name = "test";
-        test.protocol = "http";
+        //test.address = adres;
+        //test.name = "test";
+        //test.protocol = "http";
 
-        selected_device = test;
+        //selected_device = test;
 
-        if (selected_device.protocol == "http")
+        if (selected_device.protocol.equals("http") || selected_device.protocol.equals("HTTP") || selected_device.protocol.equals("Http"))
         {
 
             String ip = "";
 
-            for (int i = 0;i<test.address.size();i++)
+            for (int i = 0;i<selected_device.address.size();i++)
             {
-                ip+=test.address.get(i);
+                ip+=selected_device.address.get(i);
 
-                if(i!=test.address.size()-1)
+                if(i!=selected_device.address.size()-1)
                 {
                     ip+=".";
                 }
@@ -193,11 +279,11 @@ public class MainActivity extends AppCompatActivity
         {
             String ip = "";
 
-            for (int i = 0;i<test.address.size();i++)
+            for (int i = 0;i<selected_device.address.size();i++)
             {
-                ip+=test.address.get(i);
+                ip+=selected_device.address.get(i);
 
-                if(i!=test.address.size()-1)
+                if(i!=selected_device.address.size()-1)
                 {
                     ip+=".";
                 }
@@ -292,7 +378,7 @@ public class MainActivity extends AppCompatActivity
         {
             final Device device = selected_device;
 
-            if(device.protocol == "http")
+            if(device.protocol.equals("http") || device.protocol.equals("HTTP") || device.protocol.equals("Http"))
             {
 
                 String ip = "";
@@ -628,4 +714,12 @@ public class MainActivity extends AppCompatActivity
             terminal.append("\n" + ex.getMessage());
         }
     }
+
+    public void deleteDevice(View view) {
+        if(selected_device != null){
+            devices.remove(selected_device);
+            display();
+        }
+    }
+
 }

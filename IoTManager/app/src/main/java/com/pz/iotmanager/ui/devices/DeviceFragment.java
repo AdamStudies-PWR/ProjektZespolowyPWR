@@ -71,4 +71,12 @@ public class DeviceFragment extends Fragment
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        MainActivity activity = ((MainActivity) getActivity());
+
+        activity.display();
+    }
+
 }
