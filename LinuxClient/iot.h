@@ -2,6 +2,7 @@
 #define IOT_H
 
 #include <QString>
+#include "mqttlib.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ public:
     QString getName();
     int getProtocol();
     QString getIP();
+    QMqttClient* m_client;
 };
 
 #endif // IOT_H

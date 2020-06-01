@@ -1,7 +1,7 @@
-QT       += core gui
+QT -= gui
 QT += mqtt
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-greaterThan(QT_MAJOR_VERSION, 4): QT += network
+TEMPLATE = lib
+DEFINES += MQTTLIB_LIBRARY
 
 CONFIG += c++11
 
@@ -17,30 +17,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    filemanager.cpp \
-    iot.cpp \
-    main.cpp \
-    userinterface.cpp
+    mqttlib.cpp
 
 HEADERS += \
-    filemanager.h \
-    iot.h \
-    userinterface.h
-
-FORMS += \
-    userinterface.ui
+    MqttLib_global.h \
+    mqttlib.h
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
+unix {
+    target.path = /usr/lib
+}
 !isEmpty(target.path): INSTALLS += target
-
-unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/lib/ -lhttp
-
-INCLUDEPATH += $$PWD/../LinuxLibraries/HTTP/headers
-DEPENDPATH += $$PWD/../LinuxLibraries/HTTP/headers
-
-unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/MQTT/MqttLibs/ -lMqttLib
-
-INCLUDEPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles
-DEPENDPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles

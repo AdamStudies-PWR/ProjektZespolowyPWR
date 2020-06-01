@@ -14,12 +14,15 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QStringList>
+#include <unistd.h>
 #include "filemanager.h"
 #include "http.h"
 #include "iot.h"
 #include "QTime"
 #include "QTimer"
 #include "QThread"
+#include <QtMqtt/QMqttClient>
+#include "mqttlib.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserInterface; }
@@ -32,6 +35,8 @@ class UserInterface : public QMainWindow
 public:
     UserInterface(QWidget *parent = nullptr);
     ~UserInterface();
+    void brokerDisconnected();
+    //void updateLogStateChange();
 
 private slots:
     void on_pushButton_clicked();
@@ -63,6 +68,7 @@ private slots:
     void on_helpButton_clicked();
 
 private:
+    MqttLib mqtt;
     Http_client http;
     filemanager manager;
     QVector<iot*> devices;

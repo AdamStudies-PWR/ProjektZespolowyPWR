@@ -1,6 +1,7 @@
 #include "userinterface.h"
 #include "ui_userinterface.h"
-
+bool first = true;
+bool mqttAwaitingOutput = false;
 //Mateusz Gurski
 UserInterface::UserInterface(QWidget *parent)
     : QMainWindow(parent)
@@ -15,8 +16,55 @@ UserInterface::UserInterface(QWidget *parent)
 
     connect(&http, SIGNAL(dataReady(QByteArray)), this, SLOT(http_get_response(QByteArray)));
 
+    //connect(ui->lineEditHost, &QLineEdit::textChanged, m_client, &QMqttClient::setHostname);
+    //connect(ui->spinBoxPort, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setClientPort);
+    //updateLogStateChange();
+
     load_devices();
 }
+
+//void UserInterface::updateLogStateChange()
+//{
+//    const QString content = QDateTime::currentDateTime().toString()
+//                    + QLatin1String(": State Change")
+//                    + QString::number(m_client->state())
+//                    + QLatin1Char('\n');
+//    ui->textEdit->append(content);
+//}
+
+void UserInterface::brokerDisconnected()
+{
+    //ui->lineEditHost->setEnabled(true);
+    //ui->spinBoxPort->setEnabled(true);
+    //ui->buttonConnect->setText(tr("Connect"));
+}
+
+//void UserInterface::con()
+//{
+//    if (m_client->state() == QMqttClient::Disconnected) {
+//        //ui->lineEditHost->setEnabled(false);
+//        //ui->spinBoxPort->setEnabled(false);
+//        //ui->buttonConnect->setText(tr("Disconnect"));
+//        m_client->connectToHost();
+//    } else {
+//        //ui->lineEditHost->setEnabled(true);
+//        //ui->spinBoxPort->setEnabled(true);
+//        //ui->buttonConnect->setText(tr("Connect"));
+//        m_client->disconnectFromHost();
+//    }
+//}
+
+//void UserInterface::sub()
+//{
+//    QString topic = "broker/humidity";
+//    QString topic2 = "broker/tempereture";
+//    auto subscription = m_client->subscribe(topic);
+//    auto subscription2 = m_client->subscribe(topic2);
+//    if (!subscription || !subscription2) {
+//        QMessageBox::critical(this, QLatin1String("Error"), QLatin1String("Could not subscribe. Is there a valid connection?"));
+//        return;
+//    }
+//}
 
 UserInterface::~UserInterface()
 {
@@ -26,6 +74,7 @@ UserInterface::~UserInterface()
 //Mateusz Gurski
 void UserInterface::on_pushButton_clicked()
 {
+    japierdole:
     if(helpmode)
     {
         QMessageBox info;
@@ -52,6 +101,64 @@ void UserInterface::on_pushButton_clicked()
 
             ui->pushButton->setVisible(false);
 
+        }
+        else if(devices[row]->getProtocol() == 2)
+        {
+            //TODO
+            connected_device = devices[row];
+            //connected_device->m_client = new QMqttClient();
+            connected_device->m_client->setHostname(connected_device->getIP());
+            connected_device->m_client->setPort(1883);
+            if(first)
+            {
+                connect(connected_device->m_client, &QMqttClient::disconnected, this, &UserInterface::brokerDisconnected);
+                connect(connected_device->m_client, &QMqttClient::messageReceived, this, [this](const QByteArray &message, const QMqttTopicName &topic) {
+                    if(mqttAwaitingOutput)
+                    {const QString content = QDateTime::currentDateTime().toString()
+                                + QLatin1String(" Received Topic: ")
+                                + topic.name()
+                                + QLatin1String(" Message: ")
+                                + message
+                                + QLatin1Char('\n');
+                    ui->textEdit->insertPlainText(content);
+                    mqttAwaitingOutput=false;
+                    }
+                });
+
+                connect(connected_device->m_client, &QMqttClient::pingResponseReceived, this, [this]() {
+                    if(mqttAwaitingOutput)
+                    {const QString content = QDateTime::currentDateTime().toString()
+                                + QLatin1String(" PingResponse")
+                                + QLatin1Char('\n');
+                    ui->textEdit->insertPlainText(content);
+                    mqttAwaitingOutput=false;
+                    }
+                });
+            }
+            //connect(connected_device->m_client, &QMqttClient::stateChanged, this, &UserInterface::updateLogStateChange);
+            //ui->textEdit->insertPlainText(mqtt.GetHost(connected_device->m_client) + '\n');
+            //mqtt.Connect(connected_device->m_client);
+            connected_device->m_client->connectToHost();
+            if(connected_device->m_client->state() == QMqttClient::Disconnected)
+                ui->textEdit->append("kurwa");
+            QString topic = "broker/temperature";
+            connected_device->m_client->publish(topic, topic.toUtf8());
+            QMqttSubscription *sub;
+            sleep(2);
+            sub = connected_device->m_client->subscribe(topic);
+            sleep(2);
+            if(!sub)
+                ui->textEdit->insertPlainText("Cannot subscribe to " + topic + '\n');
+//            topic = "broker/humidity";
+//            sub = connected_device->m_client->subscribe(topic);
+//            if(!sub)
+//                ui->textEdit->insertPlainText("Cannot subscribe to " + topic + '\n');
+            if(first)
+            {
+                first = false;
+                goto japierdole;
+            }
+            ui->pushButton_3->setVisible(true);
         }
     }
     else
@@ -228,6 +335,10 @@ void UserInterface::on_addButton_clicked()
                     if(protocol == "http" || protocol == "HTTP"){
                       p = 1;
                     }
+                    else if(protocol == "mqtt" || protocol == "MQTT")
+                    {
+                        p=2;
+                    }
 
                     device = new iot(index, name, ip_ad, p);
                     devices.push_back(device);
@@ -257,6 +368,11 @@ void UserInterface::on_pushButton_3_clicked()
             for (int i=0;i<sensors_list.size();i++) {
                 http.get_request("http://"+connected_device->getIP()+"/"+sensors_list[i]);
             }
+        }
+        else if(connected_device->getProtocol()==2)
+        {
+            //TODO MqttLib
+            mqttAwaitingOutput = true;
         }
    }
 }

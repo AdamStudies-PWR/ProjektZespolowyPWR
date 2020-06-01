@@ -10,7 +10,8 @@ iot::iot(int id, QString name, int ip[4], int protocol)
     this->device_ip[2] = ip[2];
     this->device_ip[3] = ip[3];
     this->protocol = protocol;
-
+    if(protocol==2)
+        this->m_client = new QMqttClient();
     active = false;
 }
 
