@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity
     public List<Device> devices;
     boolean adminMode = false;
     public Device selected_device = null;
+    MqttClient subscriber = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -135,6 +137,8 @@ public class MainActivity extends AppCompatActivity
     {
         final TableLayout tl = (TableLayout) findViewById(R.id.device_table);
 
+        tl.setBackgroundColor(Color.TRANSPARENT);
+
         if(devices.size() > 0){
             tl.removeAllViewsInLayout();
         }
@@ -145,6 +149,8 @@ public class MainActivity extends AppCompatActivity
 
             tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+            tableRow.setBackgroundColor(Color.TRANSPARENT);
+
             tableRow.setId(1000+i);
 
             TextView id = new TextView(MainActivity.this);
@@ -152,17 +158,26 @@ public class MainActivity extends AppCompatActivity
             String text_id = "" + i;
 
             id.setText(text_id);
+            id.setTextColor(Color.WHITE);
 
             TextView nazwa = new TextView(MainActivity.this);
             nazwa.setText(devices.get(i).name);
+            nazwa.setTextColor(Color.WHITE);
+
 
             TextView protokol = new TextView(MainActivity.this);
             protokol.setText(devices.get(i).protocol);
+            protokol.setTextColor(Color.WHITE);
+
 
             TextView status = new TextView(MainActivity.this);
             status.setId(1111);
+            status.setTextColor(Color.WHITE);
+
 
             TextView wybor = new TextView(MainActivity.this);
+            wybor.setTextColor(Color.WHITE);
+
 
             tableRow.addView(id);
             tableRow.addView(nazwa);
@@ -188,6 +203,7 @@ public class MainActivity extends AppCompatActivity
                         st2.setText("");
                     }
                     st.setText("Wybrano");
+                    st.setTextColor(Color.WHITE);
 
                     selected_device = devices.get(v.getId()-1000);
 
@@ -295,7 +311,6 @@ public class MainActivity extends AppCompatActivity
             String url = "tcp://"+ip+":1883";
 
             String subscriberId = UUID.randomUUID().toString();
-            MqttClient subscriber = null;
             try {
                 MemoryPersistence persistence = new MemoryPersistence();
                 subscriber = new MqttClient(url, subscriberId, persistence);//(url,subscriberId);
@@ -320,57 +335,7 @@ public class MainActivity extends AppCompatActivity
             // be downgraded to 1 when delivering to the client but messages published at 1 and 0
             // will be received at the same level they were published at.
             //log("Subscribing to topic \""+topicName+"\" qos "+qos);
-            CountDownLatch receivedSignal = new CountDownLatch(1);
-            try {
-                subscriber.subscribe("#", (topic, msg) -> {
-                    String payload = new String(msg.getPayload());
-                    final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
 
-                    final TableRow tableRow = new TableRow(MainActivity.this);
-
-                    tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                    TextView id_urzadzenia = new TextView(MainActivity.this);
-
-                    id_urzadzenia.setText("1");
-                    id_urzadzenia.setGravity(Gravity.CENTER);
-
-                    TextView nazwa = new TextView(MainActivity.this);
-
-                    nazwa.setText(url);
-                    nazwa.setGravity(Gravity.CENTER);
-
-                    TextView odczyt = new TextView(MainActivity.this);
-
-                    odczyt.setText(payload);
-                    odczyt.setGravity(Gravity.CENTER);
-
-                    tableRow.addView(id_urzadzenia);
-                    tableRow.addView(nazwa);
-                    tableRow.addView(odczyt);
-
-                    MainActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            tableLayout.addView(tableRow);
-                        }
-                    });
-                    receivedSignal.countDown();
-                });
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-            try {
-                receivedSignal.await(2, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                // Disconnect the client from the server
-                try {
-                    subscriber.disconnect();
-                } catch (MqttException ex) {
-                    ex.printStackTrace();
-                }
-                //log("Disconnected");
-            }
         }
 
     }
@@ -378,31 +343,26 @@ public class MainActivity extends AppCompatActivity
 
     public void onRead(View view) {
 
-        if (selected_device != null)
-        {
+        if (selected_device != null) {
             final Device device = selected_device;
 
-            if(device.protocol.equals("http") || device.protocol.equals("HTTP") || device.protocol.equals("Http"))
-            {
+            if (device.protocol.equals("http") || device.protocol.equals("HTTP") || device.protocol.equals("Http")) {
 
                 String ip = "";
 
-                for (int i = 0;i<device.address.size();i++)
-                {
-                    ip+=device.address.get(i);
+                for (int i = 0; i < device.address.size(); i++) {
+                    ip += device.address.get(i);
 
-                    if(i!=device.address.size()-1)
-                    {
-                        ip+=".";
+                    if (i != device.address.size() - 1) {
+                        ip += ".";
                     }
                 }
 
-                if (device.sensor_signs != null && device.sensors != null){
+                if (device.sensor_signs != null && device.sensors != null) {
 
-                    for(int i = 0;i<device.sensors.size();i++)
-                    {
+                    for (int i = 0; i < device.sensors.size(); i++) {
 
-                        String url = "http://"+ip+"/"+device.sensors.get(i);
+                        String url = "http://" + ip + "/" + device.sensors.get(i);
 
                         final String sensor_sign = device.sensor_signs.get(i);
 
@@ -420,8 +380,7 @@ public class MainActivity extends AppCompatActivity
 
                             @Override
                             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                if(response.isSuccessful())
-                                {
+                                if (response.isSuccessful()) {
                                     String myResponse = response.body().string();
 
                                     final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
@@ -465,10 +424,80 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
+            } else if (selected_device.protocol.equals("mqtt") || selected_device.protocol.equals("Mqtt") || selected_device.protocol.equals("MQTT")) {
+
+                String ip = "";
+
+                for (int i = 0; i < selected_device.address.size(); i++) {
+                    ip += selected_device.address.get(i);
+
+                    if (i != selected_device.address.size() - 1) {
+                        ip += ".";
+                    }
+                }
+
+                String url = "tcp://" + ip + ":1883";
+
+                CountDownLatch receivedSignal = new CountDownLatch(1);
+                try {
+                    subscriber.subscribe("#", (topic, msg) -> {
+                        String payload = new String(msg.getPayload());
+                        final TableLayout tableLayout = (TableLayout) findViewById(R.id.main_table);
+                        tableLayout.setBackgroundColor(Color.TRANSPARENT);
+
+                        final TableRow tableRow = new TableRow(MainActivity.this);
+
+                        tableRow.setLayoutParams(new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                        tableRow.setBackgroundColor(Color.TRANSPARENT);
+
+                        TextView id_urzadzenia = new TextView(MainActivity.this);
+
+                        id_urzadzenia.setText("1");
+                        id_urzadzenia.setGravity(Gravity.CENTER);
+                        id_urzadzenia.setTextColor(Color.WHITE);
+
+                        TextView nazwa = new TextView(MainActivity.this);
+
+                        nazwa.setText(selected_device.name);
+                        nazwa.setGravity(Gravity.CENTER);
+                        nazwa.setTextColor(Color.WHITE);
+
+                        TextView odczyt = new TextView(MainActivity.this);
+
+                        odczyt.setText(payload);
+                        odczyt.setGravity(Gravity.CENTER);
+                        odczyt.setTextColor(Color.WHITE);
+
+                        tableRow.addView(id_urzadzenia);
+                        tableRow.addView(nazwa);
+                        tableRow.addView(odczyt);
+
+                        MainActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tableLayout.addView(tableRow);
+                            }
+                        });
+                        receivedSignal.countDown();
+                    });
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    receivedSignal.await(2, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    // Disconnect the client from the server
+                    try {
+                        subscriber.disconnect();
+                    } catch (MqttException ex) {
+                        ex.printStackTrace();
+                    }
+                    //log("Disconnected");
+                }
+
             }
         }
     }
-
 
     public void sendCommand(View view)
     {
