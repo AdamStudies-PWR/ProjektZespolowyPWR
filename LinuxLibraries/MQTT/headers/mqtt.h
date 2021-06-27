@@ -1,12 +1,12 @@
-#ifndef MQTTLIB_H
-#define MQTTLIB_H
+#ifndef MQTT_H
+#define MQTT_H
 
-#include "MqttLib_global.h"
+#include "mqtt_global.h"
 
-class MQTTLIB_EXPORT MqttLib
+class MQTT_EXPORT Mqtt
 {
 public:
-    MqttLib();
+    Mqtt();
     void UpdateLogStateChange();
     void SetClientPort(int p);
     bool Publish(QMqttTopicName &name, QByteArray &message);
@@ -15,4 +15,4 @@ public:
     void ToggleConnection();
 };
 
-#endif // MQTTLIB_H
+#endif // MQTT_H

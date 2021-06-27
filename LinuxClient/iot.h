@@ -2,7 +2,7 @@
 #define IOT_H
 
 #include <QString>
-#include "mqttlib.h"
+#include "mqtt.h"
 
 using namespace std;
 
