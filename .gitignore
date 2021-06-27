@@ -49,6 +49,7 @@ CMakeLists.txt.user*
 compile_commands.json
 
 # QtCreator local machine specific files for imported projects
+LinuxClient/LinuxClient.pro.user
 *creator.user*
 
 #ignore build directory
