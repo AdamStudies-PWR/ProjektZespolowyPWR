@@ -1,5 +1,5 @@
 # IoTMan
-Biblioteki zewnętrzne do aplikacji Linux
+Biblioteki zewnętrzne do aplikacji Linux.
 
 ## Pozostałe pliki:
 
