@@ -1,5 +1,5 @@
 # IoTMan
-Implementacja Aplikacji na system Linux
+Implementacja aplikacji na system Linux.
 
 ## Pozostałe pliki:
 
