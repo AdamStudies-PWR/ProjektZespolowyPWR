@@ -35,12 +35,12 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/lib/ -lhttp
+unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/ -lhttp
 
 INCLUDEPATH += $$PWD/../LinuxLibraries/HTTP/headers
 DEPENDPATH += $$PWD/../LinuxLibraries/HTTP/headers
 
-unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles/ -lmqtt
+unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/MQTT/ -lmqtt
 
 INCLUDEPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles
 DEPENDPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles
