@@ -22,7 +22,7 @@
 #include "QTimer"
 #include "QThread"
 #include <QtMqtt/QMqttClient>
-#include "mqttlib.h"
+#include "mqtt.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class UserInterface; }
@@ -68,7 +68,7 @@ private slots:
     void on_helpButton_clicked();
 
 private:
-    MqttLib mqtt;
+    Mqtt mqtt;
     Http_client http;
     filemanager manager;
     QVector<iot*> devices;
