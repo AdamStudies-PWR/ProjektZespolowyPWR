@@ -40,7 +40,7 @@ unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/HTTP/lib/ -lhttp
 INCLUDEPATH += $$PWD/../LinuxLibraries/HTTP/headers
 DEPENDPATH += $$PWD/../LinuxLibraries/HTTP/headers
 
-unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/MQTT/MqttLibs/ -lMqttLib
+unix:!macx: LIBS += -L$$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles/ -lmqtt
 
 INCLUDEPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles
 DEPENDPATH += $$PWD/../LinuxLibraries/MQTT/MqttLibSourceFiles
