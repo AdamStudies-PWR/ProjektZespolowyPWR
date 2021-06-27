@@ -1,5 +1,5 @@
 # IoTMan
-Aplikacja obsługi czujnika IoT
+Aplikacja obsługi czujnika IoT.
 
 ## Pozostałe pliki:
 
