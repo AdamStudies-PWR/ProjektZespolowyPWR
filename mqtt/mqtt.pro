@@ -1,7 +1,8 @@
 QT -= gui
-QT += mqtt
+
 TEMPLATE = lib
-DEFINES += MQTTLIB_LIBRARY
+DEFINES += MQTT_LIBRARY
+greaterThan(QT_MAJOR_VERSION, 4): QT += mqtt
 
 CONFIG += c++11
 
@@ -17,11 +18,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    mqttlib.cpp
+    mqtt_source_code/mqtt.cpp
 
 HEADERS += \
-    MqttLib_global.h \
-    mqttlib.h
+    mqtt_source_code/mqtt_global.h \
+    mqtt_source_code/mqtt.h
 
 # Default rules for deployment.
 unix {
